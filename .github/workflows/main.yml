@@ -29,20 +29,16 @@ jobs:
         run_install: false
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
-    - name: creates output
-      run:  pnpm i && npm run build # && echo "articles.jehy.ru" > public/CNAME    
     - name: Configure Git
       run: |
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
-
-    - uses: actions/checkout@v4
-      with:
-        ref: static
     - name: Make changes and commit
       run: |
         rm ./.gitignore
+        pnpm i
+        npm run build
         git add .
         git commit -am "make static"
     - name: Push changes
-      run: git push
+      run: git push origin static --force
