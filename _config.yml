@@ -105,4 +105,5 @@ deploy:
   type: ''
 
 marked:
-  gfm: false
+  gfm: true
+  breaks: false
