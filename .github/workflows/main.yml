@@ -12,15 +12,10 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  # Build job
   build:
-    permissions:
-      pages: write      # to deploy to Pages
-      id-token: write   # to verify the deployment originates from an appropriate source
-    # The type of runner that the job will run on
+    # Specify runner +  build & upload the static files as an artifact
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     - uses: actions/setup-node@v4
       with:
@@ -36,8 +31,20 @@ jobs:
       run: |
         pnpm i
         npm run build
-    - name: Deploy to GitHub Pages
+    - name: Upload static files as artifact
       id: deployment
-      uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+      uses: actions/upload-pages-artifact@v3 # or specific "vX.X.X" version tag for this action
       with:
-        artifact_name: public
+        path: public/
+
+  # Deployment job
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
