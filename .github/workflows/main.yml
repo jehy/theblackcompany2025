@@ -29,16 +29,12 @@ jobs:
         run_install: false
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v4
-    - name: Configure Git
+    - name: build
       run: |
-        git config user.name "github-actions[bot]"
-        git config user.email "github-actions[bot]@users.noreply.github.com"
-    - name: Make changes and commit
-      run: |
-        rm ./.gitignore
         pnpm i
         npm run build
-        git add .
-        git commit -am "make static"
-    - name: Push changes
-      run: git push origin master:static --force
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+      with:
+        artifact_name: public
