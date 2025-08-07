@@ -38,6 +38,7 @@ jobs:
     - name: Make changes and commit
       run: |
         # Example: Create a new file
+        rm ./.gitignore
         git add .
         git commit -am "make static"
     - name: Push changes
