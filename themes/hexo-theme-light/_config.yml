@@ -1,9 +1,9 @@
 menu:
-  Home: /
+  Home:
   Archives: archives
-  Команда: team
-  Картинки: pictures
+  Wishlist: wishlist
 #  Chronicles: chronicles
+#  Donate: donate
   Subscribe: atom.xml
 
 widgets:
