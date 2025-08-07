@@ -39,6 +39,6 @@ jobs:
       run: |
         # Example: Create a new file
         git add .
-        git commit -m "make static"
+        git commit -am "make static"
     - name: Push changes
       run: git push origin HEAD:static --force
