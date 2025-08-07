@@ -104,5 +104,5 @@ theme: light
 deploy:
   type: ''
 
-markdown:
+marked:
   gfm: false
