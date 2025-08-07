@@ -41,6 +41,7 @@ jobs:
         ref: static
     - name: Make changes and commit
       run: |
+        rm ./.gitignore
         git add .
         git commit -am "make static"
     - name: Push changes
