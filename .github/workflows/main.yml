@@ -41,4 +41,4 @@ jobs:
         git add .
         git commit -am "make static"
     - name: Push changes
-      run: git push origin static --force
+      run: git push master:static --force
