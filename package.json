@@ -9,7 +9,8 @@
     "server": "hexo server",
     "drop": "rm source/_posts/* -rf",
     "convert": "node --experimental-transform-types ./convert.ts",
-    "fixCategories": "node --experimental-transform-types ./fix-categories.ts"
+    "fixCategories": "node --experimental-transform-types ./fix-categories.ts",
+    "restoreMd": "git checkout HEAD ./source/_posts/*/*/*.md && git checkout HEAD ./source/_posts/*/*.md && git checkout HEAD ./source/_posts/*.md"
   },
   "hexo": {
     "version": "7.3.0"

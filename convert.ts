@@ -7,7 +7,6 @@ import promiseMap from 'p-map';
 
 interface ConvertOptions {
     outputDir?: string;      // Директория для выходных файлов
-    attachmentsDir?: string; // Поддиректория для медиафайлов (относительно outputDir)
     tags: string[];          // Теги для файла
 }
 
@@ -20,10 +19,9 @@ async function convertDocxToMarkdown(
     
     // Нормализуем пути (убираем лишние точки и слэши)
     const outputDir = options.outputDir ? path.normalize(options.outputDir) : path.dirname(filePath);
-    const attachmentsDir = options.attachmentsDir || 'attachments';
     
     // Полный путь к директории с медиафайлами
-    const fullAttachmentsPath = path.join(outputDir, attachmentsDir, fileNameWithoutExt);
+    const fullAttachmentsPath = path.join(outputDir, fileNameWithoutExt);
     
     // Создаем директории, если они не существуют
     await fsp.mkdir(fullAttachmentsPath, { recursive: true });
@@ -41,6 +39,7 @@ categories:\n - [${options.tags.map(tag=>`"${tag}"`).join(', ')}]
 //tags:\n${options.tags.map(tag => ` - ${tag}`).join('\n')}
     // Формируем команду
     const command = `pandoc -t markdown_strict --extract-media='${fullAttachmentsPath}' '${filePath}' -o '${outputFilePath}'`;
+    //const command = `pandoc -t markdown_strict --extract-media='${fullAttachmentsPath}' '${filePath}'`;
     
     console.log(`Executing: ${command}`);
     
@@ -60,6 +59,20 @@ categories:\n - [${options.tags.map(tag=>`"${tag}"`).join(', ')}]
     });
     const data = fs.readFileSync(outputFilePath, 'utf8');
     await fsp.writeFile(outputFilePath, `${header}\n\n${data}`, 'utf8');
+    // move up from media dir
+    const attachmentsMediaPath = path.join(fullAttachmentsPath, '/media');
+    if(fs.existsSync(attachmentsMediaPath)){
+        const files = await fsp.readdir(attachmentsMediaPath);
+        for (const file of files) {
+            await fsp.rename(path.join(attachmentsMediaPath, file), path.join(fullAttachmentsPath, file));
+        }
+        await fsp.rmdir(attachmentsMediaPath);
+    } else {
+        const files = await fsp.readdir(fullAttachmentsPath);
+        if(files.length === 0){
+            await fsp.rmdir(fullAttachmentsPath);
+        }
+    }
 }
 
 
@@ -99,12 +112,13 @@ function getFileMeta(file: string): {extension: string, tags: string[], title: s
 }
 // Example usage:
 const startDirectory = './docs'; // Replace with your desired starting directory
-const allNewFiles = getAllFilesRecursive(startDirectory, []);
-const newFilesWithMeta = allNewFiles.map(file=>getFileMeta(file));
+const newFiles = getAllFilesRecursive(startDirectory, []).map(file=>getFileMeta(file));
 const existingFiles = getAllFilesRecursive('./source/_posts', []).map(file=>getFileMeta(file));
-console.log(`existingFiles`, existingFiles);
 
-const nonExistingFIles = newFilesWithMeta.filter(file=>{
+const nonExistingFiles = newFiles.filter(file=>{
+    if(file.title.includes('Читать первым')){ // переименован, поэтому вот так
+        return false
+    }
     const exists =  existingFiles.find(existingFile=>{
         return existingFile.title === file.title;
     });
@@ -115,15 +129,17 @@ const nonExistingFIles = newFilesWithMeta.filter(file=>{
     return true;
 });
 
-await promiseMap(nonExistingFIles, async file=> {
+await promiseMap(newFiles, async file=> {
     console.log(`Processing file: ${file.file}`);
     if(file.extension !== '.docx') {
         console.log(`Skipping file: ${file.file}`);
         return;
     }
+    if(file.title.includes('Читать первым')){ // переименован, поэтому вот так
+        return
+    }
     await convertDocxToMarkdown(file.file, {
         outputDir: `./source/_posts/${file.tags.join('/')}`,
-        attachmentsDir: 'attachments',
         tags: file.tags,
     });
 }, {concurrency: 10});
