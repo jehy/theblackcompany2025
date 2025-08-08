@@ -110,7 +110,8 @@ function getFileMeta(file: string): {extension: string, tags: string[], title: s
         title,
     };
 }
-// Example usage:
+
+
 const startDirectory = './docs'; // Replace with your desired starting directory
 const newFiles = getAllFilesRecursive(startDirectory, []).map(file=>getFileMeta(file));
 const existingFiles = getAllFilesRecursive('./source/_posts', []).map(file=>getFileMeta(file));
@@ -129,7 +130,7 @@ const nonExistingFiles = newFiles.filter(file=>{
     return true;
 });
 
-await promiseMap(newFiles, async file=> {
+await promiseMap(nonExistingFiles, async file=> {
     console.log(`Processing file: ${file.file}`);
     if(file.extension !== '.docx') {
         console.log(`Skipping file: ${file.file}`);
