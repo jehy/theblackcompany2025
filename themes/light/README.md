@@ -40,7 +40,7 @@ widgets:
 - tag
 - twitter
 
-excerpt_link: Read More
+excerpt_link: Читать дальше
 
 twitter:
   username:
