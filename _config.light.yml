@@ -1,8 +1,8 @@
 menu:
   Home: /
   Archives: archives
-  Команда: team
-  Картинки: pictures
+#  Команда: team
+#  Картинки: pictures
 #  Chronicles: chronicles
   Subscribe: atom.xml
 
