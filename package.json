@@ -7,7 +7,8 @@
     "clean": "hexo clean",
     "deploy": "hexo deploy",
     "server": "hexo server",
-    "convert": "rm source/_posts/* -rf && node --experimental-transform-types ./convert.ts",
+    "drop": "rm source/_posts/* -rf",
+    "convert": "node --experimental-transform-types ./convert.ts",
     "fixCategories": "node --experimental-transform-types ./fix-categories.ts"
   },
   "hexo": {

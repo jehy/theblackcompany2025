@@ -30,13 +30,15 @@ async function convertDocxToMarkdown(
     
     // Формируем полный путь для выходного .md файла
     const outputFilePath = path.join(outputDir, `${fileNameWithoutExt}.md`);
+    const date = '2025-08-07T19:54:40.114Z';//new Date().toISOString()
 
     const header = `---
 title: "${fileNameWithoutExt}"
-date: ${new Date().toISOString()}
-tags:\n${options.tags.map(tag => ` - ${tag}`).join('\n')}
+date: ${date}
+categories:\n - [${options.tags.map(tag=>`"${tag}"`).join(', ')}]
 ---`;
     
+//tags:\n${options.tags.map(tag => ` - ${tag}`).join('\n')}
     // Формируем команду
     const command = `pandoc -t markdown_strict --extract-media='${fullAttachmentsPath}' '${filePath}' -o '${outputFilePath}'`;
     
@@ -53,7 +55,7 @@ tags:\n${options.tags.map(tag => ` - ${tag}`).join('\n')}
             }
             console.log(`File converted successfully: ${outputFilePath}`);
             console.log(`Media files saved to: ${fullAttachmentsPath}`);
-            resolve();
+            resolve(null);
         });
     });
     const data = fs.readFileSync(outputFilePath, 'utf8');
@@ -81,10 +83,8 @@ function getAllFilesRecursive(dirPath: string, arrayOfFiles:Array<string>):Array
   return arrayOfFiles;
 }
 
-// Example usage:
-const startDirectory = './docs'; // Replace with your desired starting directory
-const allFiles = getAllFilesRecursive(startDirectory, []);
-const filesWithMeta = allFiles.map(file=>{
+function getFileMeta(file: string): {extension: string, tags: string[], title: string, file: string} {
+
     const data = file.split('/');
     const extension = path.extname(file);
     //const extension = data[data.length-1].split('.')[1];
@@ -96,9 +96,26 @@ const filesWithMeta = allFiles.map(file=>{
         tags,
         title,
     };
+}
+// Example usage:
+const startDirectory = './docs'; // Replace with your desired starting directory
+const allNewFiles = getAllFilesRecursive(startDirectory, []);
+const newFilesWithMeta = allNewFiles.map(file=>getFileMeta(file));
+const existingFiles = getAllFilesRecursive('./source/_posts', []).map(file=>getFileMeta(file));
+console.log(`existingFiles`, existingFiles);
+
+const nonExistingFIles = newFilesWithMeta.filter(file=>{
+    const exists =  existingFiles.find(existingFile=>{
+        return existingFile.title === file.title;
+    });
+    if(exists){
+        console.log(`File already exists: ${file.file}`);
+        return false;
+    }
+    return true;
 });
 
-await promiseMap(filesWithMeta, async file=> {
+await promiseMap(nonExistingFIles, async file=> {
     console.log(`Processing file: ${file.file}`);
     if(file.extension !== '.docx') {
         console.log(`Skipping file: ${file.file}`);
