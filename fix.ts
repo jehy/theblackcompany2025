@@ -11,7 +11,7 @@ interface fixOptions {
     tags: string[];          // Теги для файла
 }
 
-async function fixCategory(
+async function fix(
     filePath: string,
     options: fixOptions = {tags: []}
 ): Promise<void> {
@@ -22,12 +22,7 @@ async function fixCategory(
     // Нормализуем пути (убираем лишние точки и слэши)
     const outputDir = options.outputDir ? path.normalize(options.outputDir) : path.dirname(filePath);
     const attachmentsDir = options.attachmentsDir || 'attachments';
-    
-    // Полный путь к директории с медиафайлами
-    const fullAttachmentsPath = path.join(outputDir, attachmentsDir, fileNameWithoutExt);
-    
-    // Создаем директории, если они не существуют
-    await fsp.mkdir(fullAttachmentsPath, { recursive: true });
+
     
     // Формируем полный путь для выходного .md файла
     const outputFilePath = path.join(outputDir, `${fileNameWithoutExt}.md`);
@@ -35,10 +30,21 @@ async function fixCategory(
         const data = await fsp.readFile(outputFilePath, 'utf8');
         const separated = data.split('---');
         const header = separated[1];
-        const headerWithoutTags = header.split('tags:')[0];
-        const categories = `categories:\n - [${options.tags.map(tag=>`"${tag}"`).join(', ')}]\n`;
-        const headerFixed = `${headerWithoutTags}\n${categories}`;
-        const separatedFixed = [separated[0], headerFixed, ...separated.slice(2)];
+        const fixedHeader = header.split('\n').map(line=>{
+            if(line.startsWith('title:')){
+                const content = line.split('title:')[1]
+                    .trim()
+                    .replaceAll('ГОТОВ', '')
+                    .replaceAll('"', '')
+                    .replaceAll('!', ' ')
+                    .replaceAll('_', ' ')
+                    .replace(/ +(?= )/g,'')// remove duplicate spaces
+                    .trim()
+                return `title: "${content}"`;
+            }
+            return line;
+        }).join('\n');
+        const separatedFixed = [separated[0], fixedHeader, ...separated.slice(2)];
         const dataFixed = separatedFixed.join('---');
         await fsp.writeFile(outputFilePath, dataFixed, 'utf8');
     }
@@ -88,7 +94,7 @@ await promiseMap(filesWithMeta, async file=> {
         console.log(`Skipping file: ${file.file}`);
         return;
     }
-    await fixCategory(file.file, {
+    await fix(file.file, {
         outputDir: `./source/_posts/${file.tags.join('/')}`,
         attachmentsDir: 'attachments',
         tags: file.tags,
