@@ -28,7 +28,7 @@ async function convertDocxToMarkdown(
     
     // Формируем полный путь для выходного .md файла
     const outputFilePath = path.join(outputDir, `${fileNameWithoutExt}.md`);
-    const date = '2025-08-07T19:54:40.114Z';//new Date().toISOString()
+    const date = '2025-08-11T19:54:40.114Z';//new Date().toISOString()
 
     const header = `---
 title: "${fileNameWithoutExt}"
@@ -75,6 +75,11 @@ categories:\n - [${options.tags.map(tag=>`"${tag}"`).join(', ')}]
     }
 }
 
+const normalizeFileName =(name: string)=>name
+    .replaceAll(' ', '')
+    .replaceAll('_', '')
+    .replaceAll('!', '')
+    .trim();
 
 function getAllFilesRecursive(dirPath: string, arrayOfFiles:Array<string>):Array<string> {
 
@@ -121,7 +126,7 @@ const nonExistingFiles = newFiles.filter(file=>{
         return false
     }
     const exists =  existingFiles.find(existingFile=>{
-        return existingFile.title === file.title;
+        return normalizeFileName(existingFile.title) === normalizeFileName(file.title);
     });
     if(exists){
         console.log(`File already exists: ${file.file}`);
