@@ -29,7 +29,7 @@
   "devDependencies": {
     "hexo-renderer-pug": "^3.0.0",
     "hexo-renderer-stylus": "^3.0.1",
-    "hexo-theme-butterfly": "^5.4.2",
+    "hexo-theme-butterfly": "^5.5.1",
     "p-map": "^7.0.3"
   }
 }
