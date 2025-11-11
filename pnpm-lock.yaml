@@ -46,8 +46,8 @@ importers:
         specifier: ^5.4.2
         version: 5.4.3
       p-map:
-        specifier: ^7.0.3
-        version: 7.0.3
+        specifier: ^7.0.4
+        version: 7.0.4
 
 packages:
 
@@ -746,8 +746,8 @@ packages:
     resolution: {integrity: sha512-7x81NCL719oNbsq/3mh+hVrAWmFuEYUqrq/Iw3kUzH8ReypT9QQ0BLoJS7/G9k6N81XjW4qHWtjWwe/9eLy1EQ==}
     engines: {node: '>=12'}
 
-  p-map@7.0.3:
-    resolution: {integrity: sha512-VkndIv2fIB99swvQoA65bm+fsmt6UNdGeIB0oxBs+WhAhdh08QA04JXpI7rbB9r08/nkbysKoya9rtDERYOYMA==}
+  p-map@7.0.4:
+    resolution: {integrity: sha512-tkAQEw8ysMzmkhgw8k+1U/iPhWNhykKnSk4Rd5zLoPJCuJaGRPo6YposrZgaxHKzDHdDWWZvE/Sk7hsL2X/CpQ==}
     engines: {node: '>=18'}
 
   parse5@7.3.0:
@@ -1797,7 +1797,7 @@ snapshots:
       is-docker: 2.2.1
       is-wsl: 2.2.0
 
-  p-map@7.0.3: {}
+  p-map@7.0.4: {}
 
   parse5@7.3.0:
     dependencies:

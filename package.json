@@ -30,6 +30,6 @@
     "hexo-renderer-pug": "^3.0.0",
     "hexo-renderer-stylus": "^3.0.1",
     "hexo-theme-butterfly": "^5.4.2",
-    "p-map": "^7.0.3"
+    "p-map": "^7.0.4"
   }
 }
